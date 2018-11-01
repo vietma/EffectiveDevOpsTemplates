@@ -106,8 +106,8 @@ t.add_resource(ec2.Instance(
     InstanceType="t2.micro",
     SecurityGroups=[Ref("SecurityGroup")],
     KeyName=Ref("KeyPair"),
-    UserData=ud,
-    IamInstanceProfile=Ref("InstanceProfile")
+    IamInstanceProfile=Ref("InstanceProfile"),
+    UserData=ud
 ))
 
 t.add_output(Output(
