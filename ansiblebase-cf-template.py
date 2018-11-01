@@ -56,14 +56,28 @@ t.add_resource(ec2.SecurityGroup(
     ]
 ))
 
-ud = Base64(Join('\n', [
+""" ud = Base64(Join('\n', [
     "#!/bin/bash",
     "yum install --enablerepo=epel -y git",
     "pip install ansible",
     AnsiblePullCmd,
     "echo '*/10 * * * * {}' > /etc/cron.d/ansible-pull".format(AnsiblePullCmd)
 ]
+)) """
+
+ud = Base64(Join('\n', [
+    "#!/bin/bash",
+    "yum install --enablerepo=epel -y git",
+    "pip install ansible",
+    AnsiblePullCmd
+]
 ))
+
+""" ud = Base64(Join('\n', [
+    "#!/bin/bash",
+    AnsiblePullCmd
+]
+)) """
 
 t.add_resource(ec2.Instance(
     "instance",
@@ -73,6 +87,14 @@ t.add_resource(ec2.Instance(
     KeyName=Ref("KeyPair"),
     UserData=ud
 ))
+
+""" t.add_resource(ec2.Instance(
+    "instance",
+    ImageId="ami-09b42976632b27e9b",
+    InstanceType="t2.micro",
+    SecurityGroups=[Ref("SecurityGroup")],
+    KeyName=Ref("KeyPair")
+)) """
 
 t.add_output(Output(
     "InstancePublicIp",
