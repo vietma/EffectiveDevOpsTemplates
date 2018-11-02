@@ -19,7 +19,7 @@ ApplicationPort = "3000"
 GithubAccount = "vietma"
 GithubAnsibleURL = "https://github.com/{}/ansible".format(GithubAccount)
 
-AnsiblePullCmd = "/usr/local/bin/ansible-pull -U {} {}.yml -i localhost".format(
+AnsiblePullCmd = "/usr/local/bin/ansible-pull -U {} {}.yml -i localhost -o".format(
     GithubAnsibleURL,
     ApplicationName
 )
@@ -61,7 +61,7 @@ t.add_resource(ec2.SecurityGroup(
     "yum install --enablerepo=epel -y git",
     "pip install ansible",
     AnsiblePullCmd,
-    "echo '*/10 * * * * {}' > /etc/cron.d/ansible-pull".format(AnsiblePullCmd)
+    "sudo su - ec2-user; echo '*/10 * * * * {}' | crontab -".format(AnsiblePullCmd)
 ]
 )) """
 
@@ -73,11 +73,6 @@ ud = Base64(Join('\n', [
 ]
 ))
 
-""" ud = Base64(Join('\n', [
-    "#!/bin/bash",
-    AnsiblePullCmd
-]
-)) """
 
 t.add_resource(ec2.Instance(
     "instance",
