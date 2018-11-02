@@ -80,7 +80,7 @@ ud = Base64(Join('\n', [
 ]
 ))
 
-""" t.add_resource(Role(
+t.add_resource(Role(
     "Role",
     AssumeRolePolicyDocument=Policy(
         Statement=[
@@ -91,24 +91,13 @@ ud = Base64(Join('\n', [
             )
         ]
     )
-)) """
+))
 
-""" t.add_resource(InstanceProfile(
+t.add_resource(InstanceProfile(
     "InstanceProfile",
     Path="/",
     Roles=[Ref("Role")]
-)) """
-
-""" t.add_resource(ec2.Instance(
-    "instance",
-    ImageId="ami-09b42976632b27e9b",
-    InstanceType="t2.micro",
-    SecurityGroups=[Ref("SecurityGroup")],
-    KeyName=Ref("KeyPair"),
-    IamInstanceProfile=Ref("InstanceProfile"),
-    UserData=ud
-)) """
-
+))
 
 t.add_resource(ec2.Instance(
     "instance",
@@ -116,8 +105,19 @@ t.add_resource(ec2.Instance(
     InstanceType="t2.micro",
     SecurityGroups=[Ref("SecurityGroup")],
     KeyName=Ref("KeyPair"),
-    UserData=ud
+    UserData=ud,
+    IamInstanceProfile=Ref("InstanceProfile")
 ))
+
+
+""" t.add_resource(ec2.Instance(
+    "instance",
+    ImageId="ami-09b42976632b27e9b",
+    InstanceType="t2.micro",
+    SecurityGroups=[Ref("SecurityGroup")],
+    KeyName=Ref("KeyPair"),
+    UserData=ud
+)) """
 
 t.add_output(Output(
     "InstancePublicIp",

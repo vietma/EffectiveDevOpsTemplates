@@ -19,7 +19,7 @@ ApplicationPort = "3000"
 GithubAccount = "vietma"
 GithubAnsibleURL = "https://github.com/{}/ansible".format(GithubAccount)
 
-AnsiblePullCmd = "/usr/local/bin/ansible-pull -U {} {}.yml -i localhost -o".format(
+AnsiblePullCmd = "/usr/local/bin/ansible-pull -U {} {}.yml -i localhost".format(
     GithubAnsibleURL,
     ApplicationName
 )
