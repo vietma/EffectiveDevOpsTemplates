@@ -65,6 +65,32 @@ t.add_resource(Role(
     ]
 ))
 
+t.add_resource(Role(
+    "CloudFormationRole",
+    AssumeRolePolicyDocument=Policy(
+        Statement=[
+            Statement(
+                Effect=Allow,
+                Action=[AssumeRole],
+                Principal=Principal(
+                    "Service", ["cloudformation.amazonaws.com"]
+                )
+            )
+        ]
+    ),
+    Path="/",
+    Policies=[
+        IAMPolicy(
+            PolicyName="HelloworldCloudFormation",
+            PolicyDocument={
+                "Statement": [
+                    {"Effect": "Allow", "Action": "cloudformation:*", "Resource": "*"}
+                ]
+            }
+        )
+    ]
+))
+
 t.add_resource(Pipeline(
     "HelloWorldPipeline",
     RoleArn=GetAtt("PipelineRole", "Arn"),
@@ -113,7 +139,8 @@ t.add_resource(Pipeline(
                         "ActionMode": "CREATE_UPDATE",
                         "StackName": "helloworld-staging-service",
                         "Capabilities": "CAPABILITY_NAMED_IAM",
-                        "TemplatePath": "helloworldApp::templates/nodeserver-cf.template"
+                        "TemplatePath": "helloworldApp::templates/nodeserver-cf.template",
+                        "RoleArn": GetAtt("CloudFormationRole", "Arn")
                     },
                     InputArtifacts=[
                         InputArtifacts(
