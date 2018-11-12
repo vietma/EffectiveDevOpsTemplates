@@ -1,19 +1,17 @@
+"""Generating CloudFormation template."""
+
 from awacs.aws import (
     Allow,
     Policy,
     Principal,
-    Statement
+    Statement,
 )
-
 from awacs.sts import AssumeRole
-from awacs.iam import PassRole, GetRole
-
 from troposphere import (
     Ref,
     GetAtt,
-    Template
+    Template,
 )
-
 from troposphere.codepipeline import (
     Actions,
     ActionTypeId,
@@ -23,7 +21,6 @@ from troposphere.codepipeline import (
     Pipeline,
     Stages
 )
-
 from troposphere.iam import Role
 from troposphere.iam import Policy as IAMPolicy
 
@@ -31,12 +28,12 @@ from troposphere.s3 import Bucket, VersioningConfiguration
 
 t = Template()
 
-t.add_description("Effective DevOps in AWS: Pipeline")
+t.add_description("Effective DevOps in AWS: Helloworld Pipeline")
 
 t.add_resource(Bucket(
     "S3Bucket",
     VersioningConfiguration=VersioningConfiguration(
-        Status="Enabled"
+        Status="Enabled",
     )
 ))
 
@@ -58,41 +55,17 @@ t.add_resource(Role(
             PolicyDocument={
                 "Statement": [
                     {"Effect": "Allow", "Action": "cloudformation:*", "Resource": "*"},
+                    {"Effect": "Allow", "Action": "codebuild:*", "Resource": "*"},
                     {"Effect": "Allow", "Action": "codepipeline:*", "Resource": "*"},
-                    {"Effect": "Allow", "Action": "s3:*", "Resource": "*"}
-                ]
+                    {"Effect": "Allow", "Action": "ecr:*", "Resource": "*"},
+                    {"Effect": "Allow", "Action": "ecs:*", "Resource": "*"},
+                    {"Effect": "Allow", "Action": "iam:*", "Resource": "*"},
+                    {"Effect": "Allow", "Action": "s3:*", "Resource": "*"},
+                ],
             }
-        )
+        ),
     ]
 ))
-
-""" t.add_resource(Role(
-    "CloudFormationRole",
-    RoleName="CloudFormationRole",
-    AssumeRolePolicyDocument=Policy(
-        Statement=[
-            Statement(
-                Effect=Allow,
-                Action=[GetRole, PassRole],
-                Principal=Principal(
-                    "Service", ["cloudformation.amazonaws.com"]
-                )
-            )
-        ]
-    ),
-    Path="/",
-    Policies=[
-        IAMPolicy(
-            PolicyName="HelloworldCloudFormation",
-            PolicyDocument={
-                "Statement": [
-                    {"Effect": "Allow", "Action": "cloudformation:*", "Resource": "*"},
-                    {"Effect": "Allow", "Action": "iam:*", "Resource": "*"}
-                ]
-            }
-        )
-    ]
-)) """
 
 t.add_resource(Role(
     "CloudFormationHelloworldRole",
@@ -116,6 +89,7 @@ t.add_resource(Role(
                     {"Effect": "Allow", "Action": "cloudformation:*", "Resource": "*"},
                     {"Effect": "Allow", "Action": "ecr:*", "Resource": "*"},
                     {"Effect": "Allow", "Action": "ecs:*", "Resource": "*"},
+                    {"Effect": "Allow", "Action": "ec2:*", "Resource": "*"},
                     {"Effect": "Allow", "Action": "iam:*", "Resource": "*"},
                 ],
             }
@@ -150,9 +124,9 @@ t.add_resource(Pipeline(
                     },
                     OutputArtifacts=[
                         OutputArtifacts(
-                            Name="helloworldApp"
+                            Name="App"
                         )
-                    ]
+                    ],
                 )
             ]
         ),
@@ -168,17 +142,19 @@ t.add_resource(Pipeline(
                         Provider="CloudFormation"
                     ),
                     Configuration={
+                        "ChangeSetName": "Deploy",
                         "ActionMode": "CREATE_UPDATE",
-                        "StackName": "helloworld-staging-service",
+                        "StackName": "helloworld-ecs-staging-service",
                         "Capabilities": "CAPABILITY_NAMED_IAM",
-                        "TemplatePath": "helloworldApp::templates/nodeserver-cf.template",
+                        "TemplatePath": "App::templates/nodeserver-cf.template",
+                        "TemplateConfiguration": "App::templates/nodeserver-cf-configuration.json",
                         "RoleArn": GetAtt("CloudFormationHelloworldRole", "Arn")
                     },
                     InputArtifacts=[
                         InputArtifacts(
-                            Name="helloworldApp"
+                            Name="App",
                         )
-                    ]
+                    ],
                 )
             ]
         ),
@@ -194,11 +170,11 @@ t.add_resource(Pipeline(
                         Provider="Manual"
                     ),
                     Configuration={},
-                    InputArtifacts=[]
+                    InputArtifacts=[],
                 )
             ]
         )
-    ]
+    ],
 ))
 
 print(t.to_json())
