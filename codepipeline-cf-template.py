@@ -145,8 +145,8 @@ t.add_resource(Pipeline(
                         "ActionMode": "CREATE_UPDATE",
                         "StackName": "helloworld-staging-service",
                         "Capabilities": "CAPABILITY_NAMED_IAM",
-                        "TemplatePath": "helloworldApp::templates/nodeserver-cf.template",
-                        "TemplateConfiguration": "helloworldApp::templates/nodeserver-cf-configuration.json",
+                        "TemplatePath": "helloworldApp::templates/ansiblebase-cf.template",
+                        "TemplateConfiguration": "helloworldApp::templates/ansiblebase-cf-configuration.json",
                         "RoleArn": GetAtt("CloudFormationHelloworldRole", "Arn")
                     },
                     InputArtifacts=[

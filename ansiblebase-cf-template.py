@@ -24,7 +24,8 @@ AnsiblePullCmd = "/usr/local/bin/ansible-pull -U {} {}.yml -i localhost".format(
     ApplicationName
 )
 
-PublicCidrIp = str(ip_network(get_ip()))
+# PublicCidrIp = str(ip_network(get_ip()))
+PublicCidrIp = "0.0.0.0/0"
 
 t = Template()
 
