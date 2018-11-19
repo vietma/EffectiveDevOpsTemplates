@@ -131,6 +131,20 @@ t.add_resource(Pipeline(
             ]
         ),
         Stages(
+            Name="Test",
+            Actions=[
+                Actions(
+                    Name="Test",
+                    ActionTypeId=ActionTypeId(
+                        Category="Test",
+                        Owner="ThirdParty",
+                        Version="1",
+                        Provider="Jenkins"
+                    )
+                )
+            ]
+        ),
+        Stages(
             Name="Staging",
             Actions=[
                 Actions(
